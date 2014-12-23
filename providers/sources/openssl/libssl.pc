@@ -1,0 +1,12 @@
+prefix=/home/magma/git/github/libcommon/providers/sources/openssl
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenSSL
+Description: Secure Sockets Layer and cryptography libraries
+Version: 1.0.1i
+Requires: 
+Libs: -L${libdir} -lssl -lcrypto
+Libs.private: -ldl -lz
+Cflags: -I${includedir} 

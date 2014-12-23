@@ -1,0 +1,5 @@
+.*.swp
+providers/
+*.a
+*.so
+.objs/

@@ -1215,8 +1215,8 @@ unsigned char * _read_file_data(const char *filename, size_t *fsize) {
 
 	if (!(result = malloc(sb.st_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
-		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not allocate space for file contents: %s", filename);
 		close(fd);
+		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not allocate space for file contents: %s", filename);
 	}
 
 	if ((nread = read(fd, result, sb.st_size)) < 0) {
@@ -1383,7 +1383,7 @@ void _secure_wipe(void *buf, size_t len) {
 		return;
 	}
 
-	memset(buf, 0x255, len);
+	memset(buf, 255, len);
 	memset(buf, 0xaa, len);
 	memset(buf, 0x55, len);
 	memset(buf, 0, len);

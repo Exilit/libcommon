@@ -8,4 +8,4 @@ zlib
 openssl-devel
 
 NOTE:
-run ./providers/build.sh before running make
+run ./build.sh from libcommon/providers/ before running make

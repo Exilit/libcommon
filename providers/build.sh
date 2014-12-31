@@ -1,7 +1,11 @@
 #!/bin/bash
 
-. params.sh
-
+if [ -f params.sh ]; then
+	. params.sh
+else
+	echo "ERROR: no params.sh. Please double-check you are at libcommon/providers directory"
+	exit 1
+fi
 
 error() {
 

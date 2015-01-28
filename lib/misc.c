@@ -1282,6 +1282,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 			}
 			
 			if (!_str_printf(&result, line)) {
+				fclose(fp);
 				RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for PEM file contents");
 			}
 

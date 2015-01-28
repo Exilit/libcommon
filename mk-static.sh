@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 LIBSSL=providers/sources/openssl/libssl.a
 LIBCRYPTO=providers/sources/openssl/libcrypto.a

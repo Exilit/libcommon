@@ -331,7 +331,8 @@ int __str_printf(char **sbuf, char *fmt, va_list ap) {
 		if (*sbuf) {
 			free(*sbuf);
 		}
-
+		
+		va_end(copy);
 		RET_ERROR_INT(ERR_NOMEM, "unable to reallocate more space for string");
 	}
 
@@ -342,6 +343,7 @@ int __str_printf(char **sbuf, char *fmt, va_list ap) {
 	endptr = result + strlen(result);
 	// Must call va_start() again.
 	va_copy(ap, copy);
+	va_end(copy);
 	retval = vsnprintf(endptr, more+1, fmt, ap);
 	*sbuf = result;
 

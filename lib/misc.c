@@ -883,14 +883,14 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
 	if (nbits == 160) {
 
 		if (!SHA1_Init(&ctx160) || !SHA1_Update(&ctx160, buf, blen) || !SHA1_Final(outbuf, &ctx160)) {
-			PUSH_ERROR_OPENSSL;
+			PUSH_ERROR_OPENSSL();
 			RET_ERROR_INT(ERR_UNSPEC, "error occurred in SHA1 hash operation");
 		}
 
 	} else if (nbits == 256) {
 
 		if (!SHA256_Init(&ctx256) || !SHA256_Update(&ctx256, buf, blen) || !SHA256_Final(outbuf, &ctx256)) {
-			PUSH_ERROR_OPENSSL;
+			PUSH_ERROR_OPENSSL();
 			RET_ERROR_INT(ERR_UNSPEC, "error occurred in SHA-256 hash operation");
 		}
 
@@ -898,7 +898,7 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
 	} else if (nbits == 512) {
 
 		if (!SHA512_Init(&ctx512) || !SHA512_Update(&ctx512, buf, blen) || !SHA512_Final(outbuf, &ctx512)) {
-			PUSH_ERROR_OPENSSL;
+			PUSH_ERROR_OPENSSL();
 			RET_ERROR_INT(ERR_UNSPEC, "error occurred in SHA-512 hash operation");
 		}
 
@@ -952,7 +952,7 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 	}
 
 	if (!res) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "error initializing SHA context");
 	}
 
@@ -971,7 +971,7 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 		}
 
 		if (!res) {
-			PUSH_ERROR_OPENSSL;
+			PUSH_ERROR_OPENSSL();
 			RET_ERROR_INT(ERR_UNSPEC, "error updating multi-buffer SHA context");
 		}
 
@@ -991,7 +991,7 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 	}
 
 	if (!res) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "error finalizing multi-buffer SHA operation");
 	}
 
@@ -1038,7 +1038,7 @@ RSA * _decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 	}
 
 	if (!(exp = BN_bin2bn(ptr, explen, NULL))) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		RET_ERROR_PTR(ERR_UNSPEC, "could not read exponent");
 	}
 
@@ -1047,13 +1047,13 @@ RSA * _decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 
 	// The remainder is the modulus.
 	if (!(mod = BN_bin2bn(ptr, left, NULL))) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		BN_free(exp);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not read modulus");
 	}
 
 	if (!(result = RSA_new())) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		BN_free(exp);
 		BN_free(mod);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create new RSA public key holder");
@@ -1110,7 +1110,7 @@ unsigned char * _encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
 
 	// Finally, store the exponent followed by the modulus.
 	if (!BN_bn2bin(pubkey->e, rptr)) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not encode RSA public key exponent");
 	}
@@ -1118,7 +1118,7 @@ unsigned char * _encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
 	rptr += BN_num_bytes(pubkey->e);
 
 	if (!BN_bn2bin(pubkey->n, rptr)) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not encode RSA public key modulus");
 	}
@@ -1145,7 +1145,7 @@ int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
 	}
 
         if ((blen = i2d_X509(cert, &buf)) < 0) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize X509 certificate");
         }
 

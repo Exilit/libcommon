@@ -19,7 +19,7 @@
 #define PUSH_ERROR_FMT(ec,fmt,...)	do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); } while (0)
 
 #define PUSH_ERROR_SYSCALL(func)	do { _push_error_stack_syscall(__FILE__, __func__, __LINE__, errno, func ); } while (0)
-#define PUSH_ERROR_OPENSSL		do { _push_error_stack_openssl(__FILE__, __func__, __LINE__, ERR_OPENSSL, errno ); } while (0)
+#define PUSH_ERROR_OPENSSL()		do { _push_error_stack_openssl(__FILE__, __func__, __LINE__, ERR_OPENSSL, errno ); } while (0)
 #define PUSH_ERROR_RESOLVER(func)	do { _push_error_stack_resolver(__FILE__, __func__, __LINE__, errno, h_errno, func ); } while (0)
 
 #define PUBLIC_FUNC_PROLOGUE		{ _clear_error_stack(); }

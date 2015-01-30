@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <netdb.h>
@@ -364,15 +365,15 @@ errinfo_t * _create_new_error(errinfo_t *errptr, const char *filename, const cha
 	memset(errptr, 0, sizeof(errinfo_t));
 
 	if (filename) {
-		strncpy(errptr->filename, filename, sizeof(errptr->filename));
+		snprintf(errptr->filename, sizeof(errptr->filename), "%s", filename);
 	}
 
 	if (funcname) {
-		strncpy(errptr->funcname, funcname, sizeof(errptr->funcname));
+		snprintf(errptr->funcname, sizeof(errptr->funcname), "%s", funcname);
 	}
 
 	if (auxmsg) {
-		strncpy(errptr->auxmsg, auxmsg, sizeof(errptr->auxmsg));
+		snprintf(errptr->auxmsg, sizeof(errptr->auxmsg), "%s", auxmsg);
 	}
 
 

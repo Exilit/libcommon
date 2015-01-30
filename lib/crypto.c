@@ -454,6 +454,7 @@ ED25519_KEY * _generate_ed25519_keypair(void) {
 
 	if (RAND_bytes(result->private, sizeof(result->private)) != 1) {
 		PUSH_ERROR_OPENSSL;
+		_secure_wipe(result, sizeof(ED25519_KEY));
 		free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not generate ed25519 secret key");
 	}
@@ -521,7 +522,7 @@ void _free_ed25519_key(ED25519_KEY *key) {
 		return;
 	}
 
-	memset(key, 0, sizeof(ED25519_KEY));
+	_secure_wipe(key, sizeof(ED25519_KEY));
 	free(key);
 
 	return;
@@ -549,11 +550,13 @@ ED25519_KEY * _load_ed25519_privkey(const char *filename) {
 	}
 
 	keydata = _b64decode(pemdata, strlen(pemdata), &klen);
+	_secure_wipe(pemdata, strlen(pemdata));
 	free(pemdata);
 
 	if (!keydata || (klen != ED25519_KEY_SIZE)) {
 
 		if (keydata) {
+			_secure_wipe(keydata, klen);
 			free(keydata);
 		}
 
@@ -562,12 +565,14 @@ ED25519_KEY * _load_ed25519_privkey(const char *filename) {
 
 	if (!(result = malloc(sizeof(ED25519_KEY)))) {
 		PUSH_ERROR_SYSCALL("malloc");
+		_secure_wipe(keydata, klen);
 		free(keydata);
 		RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for ED25519 key");
 	}
 
 	memset(result, 0, sizeof(ED25519_KEY));
 	memcpy(result->private, keydata, sizeof(result->private));
+	_secure_wipe(keydata, klen);
 	free(keydata);
 	ed25519_publickey(result->private, result->public);
 

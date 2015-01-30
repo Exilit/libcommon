@@ -254,11 +254,13 @@ EC_KEY * _deserialize_ec_pubkey(const unsigned char *buf, size_t blen, int signi
 
 	if (EC_KEY_set_group(result, EC_GROUP_new_by_curve_name(nid)) != 1) {
 		PUSH_ERROR_OPENSSL();
+		EC_KEY_free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not get curve group for deserialization");
 	}
 
 	if (!(result = o2i_ECPublicKey(&result, (const unsigned char **)&buf, blen))) {
 		PUSH_ERROR_OPENSSL();
+		EC_KEY_free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "deserialization of EC public key portion failed");
 	}
 
@@ -320,11 +322,13 @@ EC_KEY * _deserialize_ec_privkey(const unsigned char *buf, size_t blen, int sign
 
 	if (EC_KEY_set_group(result, EC_GROUP_new_by_curve_name(nid)) != 1) {
 		PUSH_ERROR_OPENSSL();
+		EC_KEY_free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not get curve group for deserialization");
 	}
 
 	if (!(result = d2i_ECPrivateKey(&result, (const unsigned char **)&buf, blen))) {
 		PUSH_ERROR_OPENSSL();
+		EC_KEY_free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "deserialization of EC public key portion failed");
 	}
 

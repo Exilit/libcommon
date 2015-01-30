@@ -2,6 +2,6 @@
 *.o
 *.a
 *.so
-providers/sources/openssl/libcrypto.so.1.0.0
-providers/sources/openssl/libssl.so.1.0.0
+providers/sources/openssl/
+providers/sources/donna/
 .objs/

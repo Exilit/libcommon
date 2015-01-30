@@ -2,6 +2,7 @@
 *.o
 *.a
 *.so
+*.d
 providers/sources/openssl/
 providers/sources/donna/
 .objs/

@@ -5,6 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <openssl/rand.h>
 
 #include <check.h>
 
@@ -20,34 +21,22 @@
 unsigned char *gen_random_data(size_t minlen, size_t maxlen, size_t *outlen) {
 
 	unsigned char *result;
-	static int seeded = 0;
-	int rval;
-	size_t rlen, i;
+	unsigned long rval;
+	size_t rlen;
+	int res;
 
-	if (!seeded) {
-		srand(time(NULL) ^ getpid());
-		seeded = 1;
-	}
+	ck_assert_uint_ge(maxlen, minlen);
 
-	rval = rand();
+	res = RAND_pseudo_bytes((unsigned char *)&rval, sizeof(rval));
+	ck_assert(res == 0 || res == 1);
+	rlen = minlen + (rval % (maxlen - minlen + 1));
 
-	if (minlen == maxlen) {
-		rlen = minlen;
-	} else {
-		rlen = minlen + (rval % (maxlen - minlen + 1));
-	}
+	result = malloc(rlen);
+	ck_assert(result != NULL);
 
-	if (!(result = malloc(rlen))) {
-		perror("malloc");
-		return NULL;
-	}
-
+	res = RAND_pseudo_bytes(result, rlen);
+	ck_assert(res == 0 || res == 1);
 	*outlen = rlen;
-	memset(result, 0, rlen);
-
-	for (i = 0; i < rlen; i++) {
-		result[i] = rand() % 256;
-	}
 
 	return result;
 }

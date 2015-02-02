@@ -1,11 +1,16 @@
 libcommon
 =========
 
-A collection of shared functionality, such as cryptography, leveraged by the various DIME libararies and command line tools.
+A collection of shared functionality, such as cryptography, leveraged
+by the various DIME libararies and command line tools.
 
-Dependencies:
-zlib
-openssl-devel
+External Dependencies:
+* check (unit test framework for C)
+* zlib1g-dev
+
+Internal Dependencies:
+* openssl
+* donna
 
 NOTE:
 run ./build.sh from libcommon/providers/ before running make

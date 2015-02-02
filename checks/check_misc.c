@@ -26,18 +26,12 @@
 
 START_TEST (check_debug_level)
 {
-
-	unsigned int i, level;
-
-	fprintf(stderr, "Checking debug level functions / set_dbg_level()/get_dbg_level():\n");
+	unsigned int i;
 
 	for (i = 0; i < 100; i++) {
 		set_dbg_level(i);
-		level = get_dbg_level();
-		ck_assert_msg(i == level, "Debug level change test failed; expected %u but read %u.\n", i, level);
+		ck_assert_uint_eq(i, get_dbg_level());
 	}
-
-	fprintf(stderr, "Debug level check ended.\n");
 }
 END_TEST
 

@@ -114,16 +114,14 @@ START_TEST (load_ec_key_file)
 	size_t i;
 
 	for (i = 0; i < 5; i++) {
-		memset(filename, 0, sizeof(filename));
 		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i+1);
 		result = load_ec_privkey(filename, &group);
-		ck_assert_msg((result != NULL), "EC key load from file check failed: error loading private key PEM file.\n");
+		ck_assert_msg(result != NULL, "load_ec_privkey failed for %s", filename);
 		free_ec_key(result);
 
-		memset(filename, 0, sizeof(filename));
 		snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i+1);
 		result = load_ec_privkey(filename, &group);
-		ck_assert_msg((result != NULL), "EC key load from file check failed: error loading public key PEM file.\n");
+		ck_assert_msg(result != NULL, "load_ec_privkey failed for %s", filename);
 		free_ec_key(result);
 	}
 

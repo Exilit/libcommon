@@ -53,13 +53,6 @@ unsigned char *gen_random_data(size_t minlen, size_t maxlen, size_t *outlen) {
 }
 
 
-START_TEST (test_name)
-{
-	printf("Testing 1!\n");
-	printf("Testing 2!\n");
-}
-END_TEST
-
 #ifdef ERROR_API_FINISHED
 /** @brief Compute positive sum of two non-negative ints or raise errinfo error.
  * @param a first addend
@@ -133,7 +126,6 @@ Suite * test_suite(void) {
 	s = suite_create("test");
 	tcase = tcase_create("core");
 
-	tcase_add_test(tcase, test_name);
 #ifdef ERROR_API_FINISHED
 	tcase_add_test(tcase, errinfo_test);
 #endif /* ERROR_API_FINISHED */
@@ -146,7 +138,7 @@ Suite * test_suite(void) {
 int main(int argc, char *argv[]) {
 
 	SRunner *sr;
-//	int nr_failed;
+	int nr_failed;
 
 	sr = srunner_create(test_suite());
 	srunner_add_suite(sr, suite_check_misc());
@@ -154,17 +146,9 @@ int main(int argc, char *argv[]) {
 
 	fprintf(stderr, "Running tests ...\n");
 
-	srunner_run_all(sr, CK_SILENT);
-	//srunner_run_all(sr, CK_NORMAL);
-//	nr_failed = srunner_ntests_failed(sr);
-	// CK_VERBOSE
-	srunner_print(sr, CK_VERBOSE);
+	srunner_run_all(sr, CK_ENV);
+	nr_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
 
-	fprintf(stderr, "Finished.\n");
-
-	//ck_assert
-	//ck_assert_msg
-
-	return 0;
+	return nr_failed != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

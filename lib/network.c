@@ -11,7 +11,7 @@
  * @param	force_family	an optional address family to force the connection to (AF_INET or AF_INET6), or 0 to ignore).
  * @return	-1 on general failure or the file descriptor of the socket connection on success.
  */
-int _connect_host(const char *hostname, unsigned short port, int force_family) {
+int connect_host_(const char *hostname, unsigned short port, int force_family) {
 
 	struct addrinfo hints, *address, *aptr;
 	char pstr[16];
@@ -42,8 +42,8 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
 
 		if ((fd = socket(aptr->ai_family, aptr->ai_socktype, aptr->ai_protocol)) < 0) {
 			continue;
-		} else if (_connect_timeout(fd, aptr->ai_addr, aptr->ai_addrlen) > 0) {
-			_dbgprint(3, "Established TCP connection (%s) to %s:%s.\n", (aptr->ai_family == AF_INET ? "IPV4" : "IPV6"), hostname, pstr);
+		} else if (connect_timeout_(fd, aptr->ai_addr, aptr->ai_addrlen) > 0) {
+			dbgprint_(3, "Established TCP connection (%s) to %s:%s.\n", (aptr->ai_family == AF_INET ? "IPV4" : "IPV6"), hostname, pstr);
 			break;
 		}
 
@@ -68,7 +68,7 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
  * @param	addrlen		the size of the supplied sockaddr structure.
  * @return	-1 on general error, 0 if the connection failed or timed out, and 1 on success.
  */
-int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen) {
+int connect_timeout_(int fd, const struct sockaddr *addr, socklen_t addrlen) {
 
 	fd_set fds;
 	struct timeval tv;

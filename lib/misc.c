@@ -15,8 +15,8 @@
 int _verbose = 0;
 
 
-unsigned char _base64_chars[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-unsigned char _base64_vals[128] =
+unsigned char base64_chars_[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+unsigned char base64_vals_[128] =
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62,
 		0, 0, 0, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 		17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
@@ -30,7 +30,7 @@ unsigned char _base64_vals[128] =
  * @param	len	the length, in bytes, of the buffer to be encoded.
  * @return	a pointer to a newly allocated null-terminated string containing the base64-encoded data, or NULL on failure.
  */
-char * _b64encode_nopad(const unsigned char *buf, size_t len) {
+char * b64encode_nopad_(const unsigned char *buf, size_t len) {
 
 	char *result, *ptr;
 
@@ -38,7 +38,7 @@ char * _b64encode_nopad(const unsigned char *buf, size_t len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if (!(result = _b64encode(buf, len))) {
+	if (!(result = b64encode_(buf, len))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not base64 encode input");
 	}
 
@@ -59,7 +59,7 @@ char * _b64encode_nopad(const unsigned char *buf, size_t len) {
  * @param	outlen	a pointer to a variable to receive the length of the decoded data.
  * @return	a pointer to a newly allocated buffer containing the base64-decoded, or NULL on failure.
  */
-unsigned char * _b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
+unsigned char * b64decode_nopad_(const char *buf, size_t len, size_t *outlen) {
 
 	unsigned char *result;
 	char *padded;
@@ -70,7 +70,7 @@ unsigned char * _b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
 	}
 
 	if (!(len % 4)) {
-		return (_b64decode(buf, len, outlen));
+		return (b64decode_(buf, len, outlen));
 	}
 
 	padlen = (len + 4) & ~(3);
@@ -84,7 +84,7 @@ unsigned char * _b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
 	padded[padlen] = 0;
 	memcpy(padded, buf, len);
 
-	result = _b64decode(padded, padlen, outlen);
+	result = b64decode_(padded, padlen, outlen);
 	free(padded);
 
 	return result;
@@ -97,7 +97,7 @@ unsigned char * _b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
  * @param	val	the 4 byte value to be placed in the specified buffer, in network byte order.
  * @return	This function returns no value.
  */
-void _int_no_put_4b(void *buf, uint32_t val) {
+void int_no_put_4b_(void *buf, uint32_t val) {
 
 	unsigned char *bptr = (unsigned char *)buf;
 
@@ -120,7 +120,7 @@ void _int_no_put_4b(void *buf, uint32_t val) {
  * @param	val	the 3 byte value to be placed in the specified buffer, in network byte order.
  * @return	This function returns no value.
  */
-void _int_no_put_3b(void *buf, uint32_t val) {
+void int_no_put_3b_(void *buf, uint32_t val) {
 
 	unsigned char *bptr = (unsigned char *)buf;
 
@@ -142,7 +142,7 @@ void _int_no_put_3b(void *buf, uint32_t val) {
  * @param	val	the 2 byte value to be placed in the specified buffer, in network byte order.
  * @return	This function returns no value.
  */
-void _int_no_put_2b(void *buf, uint16_t val) {
+void int_no_put_2b_(void *buf, uint16_t val) {
 
 	unsigned char *bptr = (unsigned char *)buf;
 
@@ -162,7 +162,7 @@ void _int_no_put_2b(void *buf, uint16_t val) {
  * @param	buf	a pointer to the data buffer from which the bytes will be read.
  * @return	the value of the first 4 bytes in the buffer in host byte order.
  */
-uint32_t _int_no_get_4b(void *buf) {
+uint32_t int_no_get_4b_(void *buf) {
 
 	uint32_t result = 0;
 	unsigned char *sptr = (unsigned char *)buf;
@@ -185,7 +185,7 @@ uint32_t _int_no_get_4b(void *buf) {
  * @param	buf	a pointer to the data buffer from which the bytes will be read.
  * @return	the value of the first 3 bytes in the buffer in host byte order.
  */
-uint32_t _int_no_get_3b(void *buf) {
+uint32_t int_no_get_3b_(void *buf) {
 
 	uint32_t result = 0;
 	unsigned char *sptr = (unsigned char *)buf;
@@ -207,7 +207,7 @@ uint32_t _int_no_get_3b(void *buf) {
  * @param	buf	a pointer to the data buffer from which the bytes will be read.
  * @return	the value of the first 2 bytes in the buffer in host byte order.
  */
-uint16_t _int_no_get_2b(void *buf) {
+uint16_t int_no_get_2b_(void *buf) {
 
 	uint16_t result = 0;
 	unsigned char *sptr = (unsigned char *)buf;
@@ -229,7 +229,7 @@ uint16_t _int_no_get_2b(void *buf) {
  * @param	len	the size, in bytes, of the buffer to be processed.
  * @return	NULL on failure, or a newly allocated null-terminated string containing the hex encoded input on success.
  */
-char * _hex_encode(const unsigned char *buf, size_t len) {
+char * hex_encode_(const unsigned char *buf, size_t len) {
 
 	char *result;
 	size_t newlen, i;
@@ -263,7 +263,7 @@ char * _hex_encode(const unsigned char *buf, size_t len) {
  * @param	level	the value of the new debugging level to be set.
  * @return	This function should always succeed and returns no value.
  */
-void _set_dbg_level(unsigned int level) {
+void set_dbg_level_(unsigned int level) {
 
 	_verbose = level;
 	return;
@@ -274,7 +274,7 @@ void _set_dbg_level(unsigned int level) {
  * @brief	Get the debugging level of the current process.
  * @return	the current value of the debugging level.
  */
-unsigned int _get_dbg_level(void) {
+unsigned int get_dbg_level_(void) {
 
 	return _verbose;
 }
@@ -286,13 +286,13 @@ unsigned int _get_dbg_level(void) {
  * @param	fmt
  * @return
  */
-int _str_printf(char **sbuf, char *fmt, ...) {
+int str_printf_(char **sbuf, char *fmt, ...) {
 
 	va_list ap;
 	int result;
 
 	va_start(ap, fmt);
-	result = __str_printf(sbuf, fmt, ap);
+	result = str_printf__(sbuf, fmt, ap);
 	va_end(ap);
 
 	return result;
@@ -305,7 +305,7 @@ int _str_printf(char **sbuf, char *fmt, ...) {
  * @param	fmt
  * @return
  */
-int __str_printf(char **sbuf, char *fmt, va_list ap) {
+int str_printf__(char **sbuf, char *fmt, va_list ap) {
 
 	va_list copy;
 	char *result, *endptr, tmp;
@@ -361,7 +361,7 @@ int __str_printf(char **sbuf, char *fmt, va_list ap) {
  * @param	dlen	the size, in bytes, of the data buffer to be appended to the output buffer.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
  */
-size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data, size_t dlen) {
+size_t mem_append_(unsigned char **buf, size_t *blen, const unsigned char *data, size_t dlen) {
 
 	void *obuf;
 
@@ -370,8 +370,8 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
 	}
 
  	if (_verbose >= 7) {
-		_dbgprint(7, "_mem_append() called: ");
-		_dump_buf(data, dlen, 1);
+		dbgprint_(7, "mem_append_() called: ");
+		dump_buf_(data, dlen, 1);
 	}
 
 	if (!*buf) {
@@ -406,7 +406,7 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
  * @param	buf	the address of the pointer chain to be freed.
  * @return	This function returns no value.
  */
-void _ptr_chain_free(void *buf) {
+void ptr_chain_free_(void *buf) {
 
 	unsigned char **memptr = (unsigned char **) buf;
 
@@ -433,7 +433,7 @@ void _ptr_chain_free(void *buf) {
  *
  *
  */
-void * _ptr_chain_add(void *buf, const void *addr) {
+void * ptr_chain_add_(void *buf, const void *addr) {
 
 	unsigned char **newbuf, **ptr = (unsigned char **) buf, **obuf;
 	size_t bufsize = sizeof(unsigned char *);
@@ -479,7 +479,7 @@ void * _ptr_chain_add(void *buf, const void *addr) {
  * @param	buf	the address of the pointer chain to be counted.
  * @param	the number of elements in the pointer chain, or -1 on general error.
  */
-int _count_ptr_chain(void *buf) {
+int count_ptr_chain_(void *buf) {
 
 	unsigned char **memptr = (unsigned char **) buf;
 	unsigned int result = 0;
@@ -501,7 +501,7 @@ int _count_ptr_chain(void *buf) {
  * @param	buf	a pointer to the pointer chain to be cloned.
  * @return	a pointer to the cloned pointer chain on success, or NULL on failure.
  */
-void * _ptr_chain_clone(void *buf) {
+void * ptr_chain_clone_(void *buf) {
 
 	unsigned char **result, **inptr = (unsigned char **)buf;
 	size_t i, nitems, totsize;
@@ -510,7 +510,7 @@ void * _ptr_chain_clone(void *buf) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if ((nitems = _count_ptr_chain(buf)) < 0) {
+	if ((nitems = count_ptr_chain_(buf)) < 0) {
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to count items in pointer chain");
 	} else if (!nitems) {
 		RET_ERROR_PTR(ERR_UNSPEC, "cannot clone empty pointer chain");
@@ -539,7 +539,7 @@ void * _ptr_chain_clone(void *buf) {
  * @param	local	if set, return the time string as a local time; if not, as UTC.
  * @return	a NULL-terminated string containing the formatted date-time.
  */
-char * _get_chr_date(time_t time, int local) {
+char * get_chr_date_(time_t time, int local) {
 
 	struct tm tmr;
 	char tbuf[64], *result;
@@ -573,7 +573,7 @@ char * _get_chr_date(time_t time, int local) {
  * @param	outlen	a pointer to a variable to receive the length of the decoded data.
  * @return	a pointer to a newly allocated buffer containing the base64-decoded, or NULL on failure.
  */
-unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
+unsigned char * b64decode_(const char *buf, size_t len, size_t *outlen) {
 
 	unsigned char *o, *result;
 	const char *p;
@@ -606,23 +606,23 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
 			switch (loop) {
 
 				case 0:
-					value = _base64_vals[(int)*p++] << 18;
+					value = base64_vals_[(int)*p++] << 18;
 					loop++;
 					break;
 				case 1:
-					value += _base64_vals[(int)*p++] << 12;
+					value += base64_vals_[(int)*p++] << 12;
 					*o++ = (value & 0x00ff0000) >> 16;
 					written++;
 					loop++;
 					break;
 				case 2:
-					value += (unsigned int)_base64_vals[(int)*p++] << 6;
+					value += (unsigned int)base64_vals_[(int)*p++] << 6;
 					*o++ = (value & 0x0000ff00) >> 8;
 					written++;
 					loop++;
 					break;
 				case 3:
-					value += (unsigned int)_base64_vals[(int)*p++];
+					value += (unsigned int)base64_vals_[(int)*p++];
 					*o++ = value & 0x000000ff;
 					written++;
 					loop = 0;
@@ -653,7 +653,7 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
  * @param	len	the length, in bytes, of the buffer to be encoded.
  * @return	a pointer to a newly allocated null-terminated string containing the base64-encoded data, or NULL on failure.
  */
-char * _b64encode(const unsigned char *buf, size_t len) {
+char * b64encode_(const unsigned char *buf, size_t len) {
 
 	unsigned char *o;
 	const unsigned char *p;
@@ -684,10 +684,10 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 		c2 = (*p++) & 0xFF;
 		c3 = (*p++) & 0xFF;
 
-		*o++ = _base64_chars[c1 >> 2];
-		*o++ = _base64_chars[((c1 << 4) | (c2 >> 4)) & 0x3F];
-		*o++ = _base64_chars[((c2 << 2) | (c3 >> 6)) & 0x3F];
-		*o++ = _base64_chars[c3 & 0x3F];
+		*o++ = base64_chars_[c1 >> 2];
+		*o++ = base64_chars_[((c1 << 4) | (c2 >> 4)) & 0x3F];
+		*o++ = base64_chars_[((c2 << 2) | (c3 >> 6)) & 0x3F];
+		*o++ = base64_chars_[c3 & 0x3F];
 
 		written += 4;
 	}
@@ -698,8 +698,8 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 			break;
 		case 1:
 			c1 = (*p++) & 0xFF;
-			*o++ = _base64_chars[(c1 & 0xFC) >> 2];
-			*o++ = _base64_chars[((c1 & 0x03) << 4)];
+			*o++ = base64_chars_[(c1 & 0xFC) >> 2];
+			*o++ = base64_chars_[((c1 & 0x03) << 4)];
 			*o++ = '=';
 			*o++ = '=';
 			written += 4;
@@ -707,9 +707,9 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 		case 2:
 			c1 = (*p++) & 0xFF;
 			c2 = (*p++) & 0xFF;
-			*o++ = _base64_chars[(c1 & 0xFC) >> 2];
-			*o++ = _base64_chars[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
-			*o++ = _base64_chars[((c2 & 0x0F) << 2)];
+			*o++ = base64_chars_[(c1 & 0xFC) >> 2];
+			*o++ = base64_chars_[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
+			*o++ = base64_chars_[((c2 & 0x0F) << 2)];
 			*o++ = '=';
 			written += 4;
 			break;
@@ -731,7 +731,7 @@ char * _b64encode(const unsigned char *buf, size_t len) {
  * @param	all_hex		if set, print all characters as hex codes - even printable ones.
  * @return	This function returns no value.
  */
-void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
+void dump_buf_(const unsigned char *buf, size_t len, int all_hex) {
 
 	size_t i;
 
@@ -772,7 +772,7 @@ void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
  * @param	all_hex		if set, print all characters as hex codes - even printable ones.
  * @return	This function returns no value.
  */
-void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int all_hex) {
+void dump_buf__outer(const unsigned char *buf, size_t len, size_t nouter, int all_hex) {
 
 	size_t i;
 
@@ -782,7 +782,7 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
 
 	// If too small, just dump the entire thing.
 	if (len <= nouter * 2) {
-		_dump_buf(buf, len, all_hex);
+		dump_buf_(buf, len, all_hex);
 		return;
 	}
 
@@ -823,12 +823,12 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
  * @param	...		the variable argument list specified by the format string.
  * @return	This function returns no value.
  */
-void _dbgprint(unsigned int dbglevel, const char *fmt, ...) {
+void dbgprint_(unsigned int dbglevel, const char *fmt, ...) {
 
 	va_list ap;
 
 	va_start(ap, fmt);
-	__dbgprint(dbglevel, fmt, ap);
+	dbgprint__(dbglevel, fmt, ap);
 	va_end(ap);
 
 	return;
@@ -838,7 +838,7 @@ void _dbgprint(unsigned int dbglevel, const char *fmt, ...) {
 /**
  * @brief	Print a debug string to the console.
  */
-void __dbgprint(unsigned int dbglevel, const char *fmt, va_list ap) {
+void dbgprint__(unsigned int dbglevel, const char *fmt, va_list ap) {
 
 	size_t i;
 
@@ -870,7 +870,7 @@ void __dbgprint(unsigned int dbglevel, const char *fmt, va_list ap) {
  * 			allocating the correct amount of space).
  * @return	0 on success or < 0 if an error was encountered.
  */
-int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsigned char *outbuf) {
+int compute_sha_hash_(size_t nbits, const unsigned char *buf, size_t blen, unsigned char *outbuf) {
 
 	SHA512_CTX ctx512;
 	SHA256_CTX ctx256;
@@ -923,7 +923,7 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
  *
  *
  */
-int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char *outbuf) {
+int compute_sha_hash_multibuf_(size_t nbits, sha_databuf_t *bufs, unsigned char *outbuf) {
 
 	SHA512_CTX ctx512;
 	SHA256_CTX ctx256;
@@ -1006,7 +1006,7 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
  * @param	dlen	the length, in bytes, of the data buffer.
  * @return	a pointer to an RSA public key structure on success, or NULL on failure.
  */
-RSA * _decode_rsa_pubkey(unsigned char *data, size_t dlen) {
+RSA * decode_rsa_pubkey_(unsigned char *data, size_t dlen) {
 
 	RSA *result;
 	BIGNUM *mod, *exp;
@@ -1075,7 +1075,7 @@ RSA * _decode_rsa_pubkey(unsigned char *data, size_t dlen) {
  * @param	enclen	a pointer to a size_t that will receive the total size of the encoded public key on completion.
  * @return	a pointer to a buffer containing the encoded RSA public key as binary data on success, or NULL on failure.
  */
-unsigned char * _encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
+unsigned char * encode_rsa_pubkey_(RSA *pubkey, size_t *enclen) {
 
 	unsigned char *result = NULL, *rptr;
 	unsigned short explen;
@@ -1135,7 +1135,7 @@ unsigned char * _encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
  * 			responsible for allocating properly depending on the hash size).
  * @return	0 if the hash operation was completed successfully, or < 0 on error.
  */
-int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
+int get_x509_cert_sha_hash_(X509 *cert, size_t nbits, unsigned char *out) {
 
         unsigned char *buf = NULL;
         int blen;
@@ -1149,7 +1149,7 @@ int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize X509 certificate");
         }
 
-        if (_compute_sha_hash(nbits, buf, blen, out) < 0) {
+        if (compute_sha_hash_(nbits, buf, blen, out) < 0) {
                 OPENSSL_free(buf);
 		RET_ERROR_INT(ERR_UNSPEC, "SHA hash on X509 certificate data failed");
         }
@@ -1167,7 +1167,7 @@ int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
  * @param	len	the size, in bytes, of the data buffer to be scanned.
  * @return	1 if the buffer was filled exclusively with null bytes, 0 if it was not, or -1 on general error.
  */
-int _is_buf_zeroed(void *buf, size_t len) {
+int is_buf_zeroed_(void *buf, size_t len) {
 
 	unsigned char *ptr = (unsigned char *)buf;
 	size_t i;
@@ -1194,7 +1194,7 @@ int _is_buf_zeroed(void *buf, size_t len) {
  * @param	fsize		a pointer to a variable that will receive the length, in bytes, of the read data.
  * @return	a pointer to a buffer containing the raw contents of the specified file, or NULL on failure.
  */
-unsigned char * _read_file_data(const char *filename, size_t *fsize) {
+unsigned char * read_file_data_(const char *filename, size_t *fsize) {
 
 	unsigned char *result;
 	struct stat sb;
@@ -1249,7 +1249,7 @@ unsigned char * _read_file_data(const char *filename, size_t *fsize) {
  * @param	nospace		if set, strip all whitespace from the PEM file content.
  * @return	a pointer to a buffer containing the contents of the specified PEM file tag, or NULL on failure.
  */
-char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
+char * read_pem_data_(const char *pemfile, const char *tag, int nospace) {
 
 	FILE *fp;
 	const char *hyphens = "-----", *begin = "BEGIN ", *end = "END ";
@@ -1283,7 +1283,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 				ptr++;
 			}
 			
-			if (!_str_printf(&result, line)) {
+			if (!str_printf_(&result, line)) {
 				fclose(fp);
 				RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for PEM file contents");
 			}
@@ -1380,7 +1380,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
  * @param	len	the size, in bytes, of the data buffer to be wiped.
  * @return	This function returns no value.
  */
-void _secure_wipe(void *buf, size_t len) {
+void secure_wipe_(void *buf, size_t len) {
 
 	if (!buf || !len) {
 		return;

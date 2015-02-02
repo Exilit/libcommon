@@ -21,7 +21,7 @@ PUBLIC_FUNC_DECL(int, connect_host, const char *hostname, unsigned short port, i
 
 
 // Private functions.
-int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen);
+int connect_timeout_(int fd, const struct sockaddr *addr, socklen_t addrlen);
 
 
 #endif

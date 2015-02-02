@@ -5,37 +5,37 @@
 #include <errno.h>
 
 
-#define RET_ERROR_INT(ec,ax)		do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return -1; } while (0)
-#define RET_ERROR_UINT(ec,ax)		do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return 0; } while (0)
-#define RET_ERROR_PTR(ec,ax)		do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return NULL; } while (0)
-#define RET_ERROR_CUST(rv,ec,ax)	do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return rv; } while (0)
+#define RET_ERROR_INT(ec,ax)		do { push_error_stack_(__FILE__, __func__, __LINE__, ec, errno, ax); return -1; } while (0)
+#define RET_ERROR_UINT(ec,ax)		do { push_error_stack_(__FILE__, __func__, __LINE__, ec, errno, ax); return 0; } while (0)
+#define RET_ERROR_PTR(ec,ax)		do { push_error_stack_(__FILE__, __func__, __LINE__, ec, errno, ax); return NULL; } while (0)
+#define RET_ERROR_CUST(rv,ec,ax)	do { push_error_stack_(__FILE__, __func__, __LINE__, ec, errno, ax); return rv; } while (0)
 
-#define RET_ERROR_INT_FMT(ec,fmt,...)	do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return -1; } while (0)
-#define RET_ERROR_UINT_FMT(ec,fmt,...)	do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return 0; } while (0)
-#define RET_ERROR_PTR_FMT(ec,fmt,...)	do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return NULL; } while (0)
-#define RET_ERROR_CUST_FMT(rv,ec,f,...)	do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, f, __VA_ARGS__); return rv; } while (0)
+#define RET_ERROR_INT_FMT(ec,fmt,...)	do { push_error_stack_fmt_(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return -1; } while (0)
+#define RET_ERROR_UINT_FMT(ec,fmt,...)	do { push_error_stack_fmt_(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return 0; } while (0)
+#define RET_ERROR_PTR_FMT(ec,fmt,...)	do { push_error_stack_fmt_(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return NULL; } while (0)
+#define RET_ERROR_CUST_FMT(rv,ec,f,...)	do { push_error_stack_fmt_(__FILE__, __func__, __LINE__, ec, errno, f, __VA_ARGS__); return rv; } while (0)
 
-#define PUSH_ERROR(ec,ax)		do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); } while (0)
-#define PUSH_ERROR_FMT(ec,fmt,...)	do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); } while (0)
+#define PUSH_ERROR(ec,ax)		do { push_error_stack_(__FILE__, __func__, __LINE__, ec, errno, ax); } while (0)
+#define PUSH_ERROR_FMT(ec,fmt,...)	do { push_error_stack_fmt_(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); } while (0)
 
-#define PUSH_ERROR_SYSCALL(func)	do { _push_error_stack_syscall(__FILE__, __func__, __LINE__, errno, func ); } while (0)
-#define PUSH_ERROR_OPENSSL()		do { _push_error_stack_openssl(__FILE__, __func__, __LINE__, ERR_OPENSSL, errno ); } while (0)
-#define PUSH_ERROR_RESOLVER(func)	do { _push_error_stack_resolver(__FILE__, __func__, __LINE__, errno, h_errno, func ); } while (0)
+#define PUSH_ERROR_SYSCALL(func)	do { push_error_stack_syscall_(__FILE__, __func__, __LINE__, errno, func ); } while (0)
+#define PUSH_ERROR_OPENSSL()		do { push_error_stack_openssl_(__FILE__, __func__, __LINE__, ERR_OPENSSL, errno ); } while (0)
+#define PUSH_ERROR_RESOLVER(func)	do { push_error_stack_resolver_(__FILE__, __func__, __LINE__, errno, h_errno, func ); } while (0)
 
-#define PUBLIC_FUNC_PROLOGUE		{ _clear_error_stack(); }
+#define PUBLIC_FUNC_PROLOGUE		{ clear_error_stack_(); }
 
-#define PUBLIC_FUNC_IMPL(x, ...)		PUBLIC_FUNC_PROLOGUE; return(_ ## x(__VA_ARGS__))
-#define PUBLIC_FUNC_IMPL_VA1(x,p1)		PUBLIC_FUNC_PROLOGUE; { va_list ap; va_start(ap, p1); __ ## x(p1, ap); va_end(ap); return; }
-#define PUBLIC_FUNC_IMPL_VA1_RET(ret, x,p1)	PUBLIC_FUNC_PROLOGUE; { va_list ap; ret result; va_start(ap, p1); result = __ ## x(p1, ap); va_end(ap); return result; }
-#define PUBLIC_FUNC_IMPL_VA2(x,p1,p2, ...)	PUBLIC_FUNC_PROLOGUE; { va_list ap; va_start(ap, p2); __ ## x(p1, p2, ap); va_end(ap); return; }
-#define PUBLIC_FUNC_IMPL_VA2_RET(ret, x,p1,p2)	PUBLIC_FUNC_PROLOGUE; { va_list ap; ret result; va_start(ap, p2); result =  __ ## x(p1, p2, ap); va_end(ap); return result; }
+#define PUBLIC_FUNC_IMPL(x, ...)		PUBLIC_FUNC_PROLOGUE; return(x ## _(__VA_ARGS__))
+#define PUBLIC_FUNC_IMPL_VA1(x,p1)		PUBLIC_FUNC_PROLOGUE; { va_list ap; va_start(ap, p1); x ## __(p1, ap); va_end(ap); return; }
+#define PUBLIC_FUNC_IMPL_VA1_RET(ret, x,p1)	PUBLIC_FUNC_PROLOGUE; { va_list ap; ret result; va_start(ap, p1); result = x ## __(p1, ap); va_end(ap); return result; }
+#define PUBLIC_FUNC_IMPL_VA2(x,p1,p2, ...)	PUBLIC_FUNC_PROLOGUE; { va_list ap; va_start(ap, p2); x ## __(p1, p2, ap); va_end(ap); return; }
+#define PUBLIC_FUNC_IMPL_VA2_RET(ret, x,p1,p2)	PUBLIC_FUNC_PROLOGUE; { va_list ap; ret result; va_start(ap, p2); result =  x ## __(p1, p2, ap); va_end(ap); return result; }
 
 #define PUBLIC_FUNC_DECL(ret, x, ...)		ret x(__VA_ARGS__); \
-						ret _ ## x(__VA_ARGS__)
+						ret x ## _(__VA_ARGS__)
 
 #define PUBLIC_FUNC_DECL_VA(ret, x, ...)	ret x(__VA_ARGS__, ...); \
-						ret _ ## x(__VA_ARGS__, ...); \
-						ret __ ## x(__VA_ARGS__, va_list ap);
+						ret x ## _(__VA_ARGS__, ...); \
+						ret x ## __(__VA_ARGS__, va_list ap);
 
 
 #define ERR_SYSCALL		1
@@ -79,13 +79,13 @@ void              dump_error_stack(void);
 
 
 // Internal error handling functions.
-void              _clear_error_stack(void);
-errinfo_t *       _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg);
-errinfo_t *       _push_error_stack_fmt(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...);
-errinfo_t *       _push_error_stack_syscall(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc);
-errinfo_t *       _push_error_stack_openssl(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno);
-errinfo_t *       _push_error_stack_resolver(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc);
-errinfo_t *       _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg);
-void              _dump_error(const errinfo_t *error);
+void              clear_error_stack_(void);
+errinfo_t *       push_error_stack_(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg);
+errinfo_t *       push_error_stack_fmt_(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...);
+errinfo_t *       push_error_stack_syscall_(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc);
+errinfo_t *       push_error_stack_openssl_(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno);
+errinfo_t *       push_error_stack_resolver_(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc);
+errinfo_t *       create_new_error_(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg);
+void              dump_error_(const errinfo_t *error);
 
 #endif

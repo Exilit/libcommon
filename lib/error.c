@@ -19,7 +19,7 @@ struct thread_err_stack {
 } __attribute__ ((__packed__));
 
 
-__thread struct thread_err_stack _t_err_stack;
+__thread struct thread_err_stack t_err_stack_;
 
 
 // The global error message string table.
@@ -36,16 +36,16 @@ err_desc_t err_desc_table[] = {
 
 void dump_last_error(void) {
 
-	if (!_t_err_stack.error_stack_top) {
+	if (!t_err_stack_.error_stack_top) {
 		fprintf(stderr, "Last error: error stack is empty.\n");
 		return;
 	}
 
-	if (_t_err_stack.error_stack_overflow) {
+	if (t_err_stack_.error_stack_overflow) {
 		fprintf(stderr, "Warning: the error stack has overflowed, which has resulted in the loss of information.\n");
 	}
 
-	_dump_error(_t_err_stack.error_stack_top);
+	dump_error_(t_err_stack_.error_stack_top);
 
 	return;
 }
@@ -57,21 +57,21 @@ void dump_last_error(void) {
  */
 void dump_error_stack(void) {
 
-	errinfo_t *errptr = &(_t_err_stack.error_stack[0]);
+	errinfo_t *errptr = &(t_err_stack_.error_stack[0]);
 	size_t n = 0;
 
-	if (!_t_err_stack.error_stack_top) {
+	if (!t_err_stack_.error_stack_top) {
 		fprintf(stderr, "Error stack is empty.\n");
 		return;
 	}
 
-	if (_t_err_stack.error_stack_overflow) {
+	if (t_err_stack_.error_stack_overflow) {
 		fprintf(stderr, "Warning: the error stack has overflowed, which has resulted in the loss of information.\n");
 	}
 
-	while (errptr <= _t_err_stack.error_stack_top) {
+	while (errptr <= t_err_stack_.error_stack_top) {
 		fprintf(stderr, "[%zu]: ", n);
-		_dump_error(errptr);
+		dump_error_(errptr);
 		errptr++;
 		n++;
 	}
@@ -85,7 +85,7 @@ void dump_error_stack(void) {
  * @param	error	a pointer to the error stack object to be displayed.
  * @return	This function returns no value.
  */
-void _dump_error(const errinfo_t *error) {
+void dump_error_(const errinfo_t *error) {
 
 	const char *errstring;
 
@@ -138,11 +138,11 @@ const char *get_error_string(unsigned int errcode) {
  */
 unsigned int get_last_error_code(void) {
 
-	if (!_t_err_stack.error_stack_top) {
+	if (!t_err_stack_.error_stack_top) {
 		return 0;
 	}
 
-	return _t_err_stack.error_stack_top->errcode;
+	return t_err_stack_.error_stack_top->errcode;
 }
 
 
@@ -152,7 +152,7 @@ unsigned int get_last_error_code(void) {
  */
 const errinfo_t *get_last_error(void) {
 
-	return _t_err_stack.error_stack_top;
+	return t_err_stack_.error_stack_top;
 }
 
 
@@ -160,16 +160,16 @@ errinfo_t *pop_last_error(void) {
 
 	errinfo_t *error;
 
-	if (!_t_err_stack.error_stack_top) {
+	if (!t_err_stack_.error_stack_top) {
 		return NULL;
 	}
 
-	error = _t_err_stack.error_stack_top;
+	error = t_err_stack_.error_stack_top;
 
-	if (_t_err_stack.error_stack_top == &(_t_err_stack.error_stack[0])) {
-		_t_err_stack.error_stack_top = NULL;
+	if (t_err_stack_.error_stack_top == &(t_err_stack_.error_stack[0])) {
+		t_err_stack_.error_stack_top = NULL;
 	} else {
-		_t_err_stack.error_stack_top--;
+		t_err_stack_.error_stack_top--;
 	}
 
 	return error;
@@ -178,11 +178,11 @@ errinfo_t *pop_last_error(void) {
 
 const errinfo_t * get_first_error(void) {
 
-	if (!_t_err_stack.error_stack_top) {
+	if (!t_err_stack_.error_stack_top) {
 		return NULL;
 	}
 
-	return &(_t_err_stack.error_stack[0]);
+	return &(t_err_stack_.error_stack[0]);
 }
 
 
@@ -190,11 +190,11 @@ const errinfo_t * get_first_error(void) {
  * @brief	Clear the calling thread's error stack.
  * @return	This function returns no value.
  */
-void _clear_error_stack(void) {
+void clear_error_stack_(void) {
 
-	memset(_t_err_stack.error_stack, 0, sizeof(_t_err_stack.error_stack));
-	_t_err_stack.error_stack_top = NULL;
-	_t_err_stack.error_stack_overflow = 0;
+	memset(t_err_stack_.error_stack, 0, sizeof(t_err_stack_.error_stack));
+	t_err_stack_.error_stack_top = NULL;
+	t_err_stack_.error_stack_overflow = 0;
 
 	return;
 }
@@ -210,23 +210,23 @@ void _clear_error_stack(void) {
  * @param	auxmisg
  * @return
  */
-errinfo_t * _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg) {
+errinfo_t * push_error_stack_(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg) {
 
 	errinfo_t *err;
 
-	if (_t_err_stack.error_stack_top == &(_t_err_stack.error_stack[ERR_STACK_SIZE-1])) {
-		_t_err_stack.error_stack_overflow = 1;
+	if (t_err_stack_.error_stack_top == &(t_err_stack_.error_stack[ERR_STACK_SIZE-1])) {
+		t_err_stack_.error_stack_overflow = 1;
 		fprintf(stderr, "Error stack overflow.\n");
 		return NULL;
 	}
 
-	if (!_t_err_stack.error_stack_top) {
-		_t_err_stack.error_stack_top = &(_t_err_stack.error_stack[0]);
+	if (!t_err_stack_.error_stack_top) {
+		t_err_stack_.error_stack_top = &(t_err_stack_.error_stack[0]);
 	} else {
-		_t_err_stack.error_stack_top++;
+		t_err_stack_.error_stack_top++;
 	}
 
-	err = _create_new_error(_t_err_stack.error_stack_top, filename, funcname, lineno, errcode, xerrno, auxmsg);
+	err = create_new_error_(t_err_stack_.error_stack_top, filename, funcname, lineno, errcode, xerrno, auxmsg);
 
 	return err;
 }
@@ -243,7 +243,7 @@ errinfo_t * _push_error_stack(const char *filename, const char *funcname, int li
  * @param	...
  * @return
  */
-errinfo_t * _push_error_stack_fmt(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...) {
+errinfo_t * push_error_stack_fmt_(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...) {
 
 	va_list ap;
 	char auxmsg[1024];
@@ -254,7 +254,7 @@ errinfo_t * _push_error_stack_fmt(const char *filename, const char *funcname, in
 	vsnprintf(auxmsg, sizeof(auxmsg), fmt, ap);
 	va_end(ap);
 
-	return (_push_error_stack(filename, funcname, lineno, errcode, xerrno, auxmsg));
+	return (push_error_stack_(filename, funcname, lineno, errcode, xerrno, auxmsg));
 }
 
 
@@ -267,7 +267,7 @@ errinfo_t * _push_error_stack_fmt(const char *filename, const char *funcname, in
  * @param	errfunc		the name of the library call or syscall function responsible for setting errno.
  * @return
  */
-errinfo_t * _push_error_stack_syscall(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc) {
+errinfo_t * push_error_stack_syscall_(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc) {
 
 	char auxmsg[256], *ptr;
 
@@ -276,7 +276,7 @@ errinfo_t * _push_error_stack_syscall(const char *filename, const char *funcname
 	ptr = auxmsg + strlen(auxmsg);
 	strerror_r(xerrno, ptr, (unsigned long)(auxmsg + sizeof(auxmsg)) - (unsigned long)ptr);
 
-	return (_push_error_stack(filename, funcname, lineno, ERR_SYSCALL, xerrno, auxmsg));
+	return (push_error_stack_(filename, funcname, lineno, ERR_SYSCALL, xerrno, auxmsg));
 }
 
 
@@ -289,7 +289,7 @@ errinfo_t * _push_error_stack_syscall(const char *filename, const char *funcname
  * @param	xerrno
  * @return
  */
-errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno) {
+errinfo_t * push_error_stack_openssl_(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno) {
 
 	const char *ssl_filename, *ssl_data;
 	char auxmsg[512], tmpbuf[512], tmpbuf2[512];
@@ -324,7 +324,7 @@ errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname
 		strncat(auxmsg, tmpbuf, sizeof(auxmsg)-1);
 	}
 
-	return (_push_error_stack(filename, funcname, lineno, errcode, xerrno, auxmsg));
+	return (push_error_stack_(filename, funcname, lineno, errcode, xerrno, auxmsg));
 }
 
 
@@ -338,14 +338,14 @@ errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname
  * @param	errfunc
  * @return
  */
-errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc) {
+errinfo_t * push_error_stack_resolver_(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc) {
 
 	char auxmsg[256];
 
 	memset(auxmsg, 0, sizeof(auxmsg));
 	snprintf(auxmsg, sizeof(auxmsg)-1, "%s: [%u]: %s", errfunc, herrno, hstrerror(herrno));
 
-	return (_push_error_stack(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
+	return (push_error_stack_(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
 }
 
 	
@@ -360,7 +360,7 @@ errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcnam
  * @param	auxmsg
  * @return
  */
-errinfo_t * _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg) {
+errinfo_t * create_new_error_(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg) {
 
 	memset(errptr, 0, sizeof(errinfo_t));
 

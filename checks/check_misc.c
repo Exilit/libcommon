@@ -35,6 +35,25 @@ START_TEST (check_debug_level)
 }
 END_TEST
 
+START_TEST(check_base64_macros)
+{
+	ck_assert_uint_eq(0, B64_ENCODED_LEN(0));
+	ck_assert_uint_eq(4, B64_ENCODED_LEN(1));
+	ck_assert_uint_eq(4, B64_ENCODED_LEN(2));
+	ck_assert_uint_eq(4, B64_ENCODED_LEN(3));
+	ck_assert_uint_eq(40, B64_ENCODED_LEN(30));
+	ck_assert_uint_eq(44, B64_ENCODED_LEN(31));
+	ck_assert_uint_eq(40, B64_ENCODED_LEN(10 + 10 + 10));
+
+	ck_assert_uint_eq(0, BASE64_DECODED_LEN(0));
+	ck_assert_uint_eq(1, BASE64_DECODED_LEN(2));
+	ck_assert_uint_eq(2, BASE64_DECODED_LEN(3));
+	ck_assert_uint_eq(3, BASE64_DECODED_LEN(4));
+	ck_assert_uint_eq(57, BASE64_DECODED_LEN(76));
+	ck_assert_uint_eq(30 + 30 + 30, BASE64_DECODED_LEN(40 + 40 + 40));
+}
+END_TEST
+
 
 Suite * suite_check_misc(void) {
 
@@ -43,6 +62,7 @@ Suite * suite_check_misc(void) {
 
 	s = suite_create("misc");
 	testcase(s, tc, "Debug Level Check", check_debug_level);
+	testcase(s, tc, "Base64 Macros", check_base64_macros);
 
 	return s;
 }

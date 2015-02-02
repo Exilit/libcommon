@@ -27,8 +27,8 @@
 
 #define SHA_512_B64_SIZE	86
 
-#define B64_ENCODED_LEN(len)	(((len + ((len % 3) ? (3 - (len % 3)) : 0)) / 3) * 4)
-#define BASE64_DECODED_LEN(len)	(len * 3/4)
+#define B64_ENCODED_LEN(len)	((((len) + (((len) % 3) ? (3 - ((len) % 3)) : 0)) / 3) * 4)
+#define BASE64_DECODED_LEN(len)	((len) * 3/4)
 
 
 typedef struct {

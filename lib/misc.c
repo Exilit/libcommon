@@ -1273,7 +1273,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
 			while (*ptr) {
 
-				if (isspace(*ptr)) {
+				if (isspace(*(unsigned char *)ptr)) {
 					slen = strlen(ptr+1);
 					memmove(ptr, (ptr+1), slen);
 					ptr[slen] = 0;
@@ -1306,7 +1306,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
 		ptr = line;
 
-		while (*ptr && isspace(*ptr)) {
+		while (*ptr && isspace(*(unsigned char *)ptr)) {
 			ptr++;
 		}
 
@@ -1341,7 +1341,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 		ptr += strlen(hyphens);
 
 		// The trailing hyphens shouldn't be followed by anything other than whitespace.
-		while (*ptr && isspace(*ptr)) {
+		while (*ptr && isspace(*(unsigned char *)ptr)) {
 			ptr++;
 		}
 
